@@ -1,4 +1,4 @@
-module arnolddennis.net/quiz2
+module github.com/D3nnisA/4191-1
 
 go 1.19
 

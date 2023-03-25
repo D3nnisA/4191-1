@@ -1,0 +1,1 @@
+COPY courses FROM '/home/desho/webQuiz/quiz2/migrations/courses.csv' WITH delimiter ',' CSV HEADER;

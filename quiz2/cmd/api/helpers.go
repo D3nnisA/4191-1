@@ -52,7 +52,7 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data envelo
 	return nil
 }
 
-func (app *application) raedJSON(w http.ResponseWriter, r *http.Request, destination interface{}) error {
+func (app *application) readJSON(w http.ResponseWriter, r *http.Request, destination interface{}) error {
 
 	//we will try to decode the json request
 	err := json.NewDecoder(r.Body).Decode(destination)
