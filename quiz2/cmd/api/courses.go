@@ -11,7 +11,7 @@ import (
 
 func (app *application) createCoursesHandler(w http.ResponseWriter, r *http.Request) {
 
-	//Create a struct to hold a school that will be provided to us via the request
+	//Create a struct to hold a course that will be provided to us via the request
 	var input struct {
 		CourseCode   string `json:"Course Code"`
 		CourseTitle  string `json:"Course Title"`
@@ -34,7 +34,7 @@ func (app *application) createCoursesHandler(w http.ResponseWriter, r *http.Requ
 }
 
 func (app *application) showCoursesHandler(w http.ResponseWriter, r *http.Request) {
-	version, err := app.readIDParams(r)
+	id, err := app.readIDParams(r)
 
 	if err != nil {
 		app.notFoundResponse(w, r)
@@ -44,11 +44,11 @@ func (app *application) showCoursesHandler(w http.ResponseWriter, r *http.Reques
 	//fmt.Fprintf(w, "show details of courses %d\n", id)
 
 	course := data.Courses{
-
+		ID:           id,
 		CourseCode:   "MATH2134",
 		CourseTitle:  "Algebra",
 		CourseCredit: "3",
-		Version:      int32(version),
+		Version:      1,
 	}
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"course": course}, nil)
