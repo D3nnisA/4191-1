@@ -12,6 +12,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/D3nnisA/4191-1/internal/data"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -35,6 +36,7 @@ type config struct {
 type application struct {
 	config config
 	logger *log.Logger
+	models data.Models
 }
 
 //setup main() function
@@ -76,6 +78,7 @@ func main() {
 	app := &application{
 		config: cfg,
 		logger: logger,
+		models: data.NewModels(db),
 	}
 
 	//create our server
