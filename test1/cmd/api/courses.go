@@ -38,25 +38,6 @@ func (app *application) createCoursesHandler(w http.ResponseWriter, r *http.Requ
 		CourseCredit: input.CourseCredit,
 	}
 
-	// //write our validated school to database
-
-	// err = app.models.Courses.Insert(course)
-	// if err != nil {
-	// 	app.serverErrorResponse(w, r, err)
-	// 	return
-	// }
-
-	// //set the creation header
-	// headers := make(http.Header)
-	// headers.Set("Location", fmt.Sprintf("/v1/courses/%d", course.ID))
-
-	//write the response
-
-	// err = app.writeJSON(w, http.StatusCreated, envelope{"course": course}, headers)
-	// if err != nil {
-	// 	app.serverErrorResponse(w, r, err)
-	// }
-
 	// Create a School
 	err = app.models.Courses.Insert(course)
 	if err != nil {

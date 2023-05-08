@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -45,7 +46,47 @@ func (m CourseModel) Insert(Course *Courses) error {
 
 // Get() allows us to retrieve a specific School
 func (m CourseModel) Get(id int64) (*Courses, error) {
-	return nil, nil
+
+	// Ensure that there is a valid id
+	if id < 1 {
+		return nil, ErrRecordNotFound
+	}
+	// Create the query
+	query := `
+		SELECT id, created_at, CourseCode, CourseTitle, CourseCredit, version
+		FROM courses
+		WHERE id = $1
+	`
+	// Declare a School variable to hold the returned data
+	var course Courses
+	// Create a context
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	// Cleanup to prevent memory leaks
+	defer cancel()
+	// Execute the query using QueryRow()
+	err := m.DB.QueryRowContext(ctx, query, id).Scan(
+		&course.ID,
+		&course.CreatedAt,
+		&course.CourseCode,
+		&course.CourseTitle,
+		&course.CourseCredit,
+		&course.Version,
+	)
+	// Handle any errors
+	if err != nil {
+		// Check the type of error
+		switch {
+
+		case errors.Is(err, sql.ErrNoRows):
+
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+	// Success
+	return &course, nil
+
 }
 
 // update
