@@ -18,7 +18,7 @@ type Courses struct {
 	Version      int32     `json:"version"`
 }
 
-// Define a SchoolModel which wraps a sql.DB connection pool
+// Define a courseModel which wraps a sql.DB connection pool
 type CourseModel struct {
 	DB *sql.DB
 }
@@ -44,7 +44,7 @@ func (m CourseModel) Insert(Course *Courses) error {
 	return m.DB.QueryRowContext(ctx, query, args...).Scan(&Course.ID, &Course.CreatedAt, &Course.Version)
 }
 
-// Get() allows us to retrieve a specific School
+// Get() allows us to retrieve a specific course
 func (m CourseModel) Get(id int64) (*Courses, error) {
 
 	// Ensure that there is a valid id
@@ -57,7 +57,7 @@ func (m CourseModel) Get(id int64) (*Courses, error) {
 		FROM courses
 		WHERE id = $1
 	`
-	// Declare a School variable to hold the returned data
+	// Declare a course variable to hold the returned data
 	var course Courses
 	// Create a context
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
