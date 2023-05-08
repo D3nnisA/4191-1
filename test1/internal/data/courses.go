@@ -89,12 +89,70 @@ func (m CourseModel) Get(id int64) (*Courses, error) {
 
 }
 
-// update
+// update CourseCode, CourseTitle, CourseCredit
 func (m CourseModel) Update(Course *Courses) error {
+	// Create a query
+	query := `
+		UPDATE courses
+		SET CourseCode = $1, CourseTitle = $2, CourseCredit = $3, version = version + 1
+		WHERE id = $4
+		AND version = $5
+		RETURNING version
+	`
+	args := []interface{}{
+		Course.CourseCode,
+		Course.CourseTitle,
+		Course.CourseCredit,
+		Course.ID,
+		Course.Version,
+	}
+	// Create a context
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	// Cleanup to prevent memory leaks
+	defer cancel()
+	// Check for edit conflicts
+	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&Course.Version)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
 	return nil
 }
 
-// Delete() removes a specific School
+// Delete() removes a specific course
 func (m CourseModel) Delete(id int64) error {
+
+	// Ensure that there is a valid id
+	if id < 1 {
+		return ErrRecordNotFound
+	}
+	// Create the delete query
+	query := `
+		DELETE FROM courses
+		WHERE id = $1
+	`
+	// Create a context
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	// Cleanup to prevent memory leaks
+	defer cancel()
+	// Execute the query
+	result, err := m.DB.ExecContext(ctx, query, id)
+	if err != nil {
+		return err
+	}
+	// Check how many rows were affected by the delete operation. We
+	// call the RowsAffected() method on the result variable
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	// Check if no rows were affected
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
 	return nil
 }
